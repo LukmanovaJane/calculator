@@ -27,3 +27,9 @@ def make_calculation(body: PostBodyIn = Body(...)):
 def __sum(number1: int, number2: int):
     """ Returns sum of two received numbers """
     return number1 + number2
+
+
+@app.exception_handler(ValidationError)
+async def pydantic_validation_error_handler(_: Request, exc: ValidationError) -> JSONResponse:
+    """ Handles and returns internal exceptions as validation response model"""
+    return JSONResponse(exc.errors(), status_code=422)
