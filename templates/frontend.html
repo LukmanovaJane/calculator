@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sum Calculator</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+</head>
+<body>
+    <!-- Intro -->
+    <h1>Sum Calculator</h1>
+    <p>Enter two numbers, press the "Calculate" button
+       and get the result of sum calculation!</p>
+
+    <!--  Input values  -->
+    <form>
+        <label for="num1">Number 1:</label>
+        <input type="number" id="num1" placeholder="0">
+        <br>
+        <label for="num2">Number 2:</label>
+        <input type="number" id="num2" placeholder="0">
+        <br><br>
+    </form>
+
+    <!--  Output result  -->
+    <form>
+        <label for="result">Result:</label>
+        <output id="result" style="color: green">
+            {{result}}
+        </output>
+        <br><br>
+    </form>
+
+    <!--  Submit botton  -->
+    <form>
+        <button type="button" onclick="Post()">Calculate!</button>
+        <br><br>
+    </form>
+
+    <!--  Exception field  -->
+    <form>
+        <output id="exception" style="color:Tomato;">
+            {{exception}}
+        </output>
+        <br><br>
+    </form>
+
+    <!--  Script for POST request  -->
+    <script>
+        function Post() {
+            var num1 = Number(document.getElementById("num1").value);
+            var num2 = Number(document.getElementById("num2").value);
+
+            // Form JSON body for request
+            var json_text = JSON.stringify({"number1": num1, "number2": num2}, null, 2);
+
+            // Setting async request in general
+            $.ajaxSetup({async: true});
+
+            // Setting POST request
+            $.post("/calc", json_text,
+                  function(data, status, xhr) {
+
+              }, "json")
+                // If request successful: writes response to `result` and clears `exception` field
+                .done(function(response) {
+                    document.getElementById("result").innerHTML = Object.values(response);
+                    document.getElementById("exception").innerHTML = String("");
+                })
+                // If request fail: writes exception information to `exception` and clear `result`
+                .fail(function(exception) {
+                    // Parse exception values to highlight only useful info
+                    var all = Object.values(exception)
+                    var HttpException =
+                        "HTTP status: " + all[all.length - 2] +
+                        "<br>HTTP exception: " + all[all.length - 1]+
+                        "<br>Pydantic description: " + all[all.length - 4]
+
+                    document.getElementById("exception").innerHTML = HttpException;
+                    document.getElementById("result").innerHTML = String("");
+
+                });
+        }
+    </script>
+
+
+</body>
+</html>
