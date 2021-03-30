@@ -1,9 +1,20 @@
-from fastapi import FastAPI, Body, Request
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI, Body, Request, Form
+from fastapi.responses import JSONResponse, HTMLResponse, RedirectResponse
+from fastapi.templating import Jinja2Templates
 
 from pydantic import BaseModel, conint, ValidationError
 
+from pathlib import Path
+
 app = FastAPI()
+
+templates = Jinja2Templates(directory='templates')
+
+
+@app.get("/", response_class=HTMLResponse)
+def home(request: Request):
+    """ Returns a home page """
+    return templates.TemplateResponse("frontend.html", {"request": request})
 
 
 class PostBodyIn(BaseModel):
